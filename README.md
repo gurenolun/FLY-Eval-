@@ -138,6 +138,56 @@ If you use this evaluation framework, please cite:
 
 [Specify your license here]
 
+## Key Scripts
+
+- `run_46_models_evaluation.py`: Main script for evaluating 45 additional models using deterministic evaluation
+- `generate_appendix_B_table.py`: Generates LaTeX tables from evaluation results for paper appendices
+- `fly_eval_plus_plus/run_deterministic_evaluation.py`: Core deterministic evaluation runner
+- `fly_eval_plus_plus/main.py`: Main evaluator class (FLYEvalPlusPlus)
+
+## Evaluation Method
+
+The framework uses a deterministic (rule-based) evaluation approach that:
+
+1. **Parses model outputs** into structured JSON format
+2. **Validates protocol compliance** (JSON structure, required fields)
+3. **Checks field validity** (value ranges, data types)
+4. **Verifies physics constraints** (cross-field consistency, physical laws)
+5. **Assesses safety constraints** (critical parameter bounds)
+6. **Compares predictions** against ground truth for accuracy
+
+All scores are normalized to 0-1 range and reported as percentages.
+
+## Example Usage
+
+```python
+from fly_eval_plus_plus.main import FLYEvalPlusPlus
+from fly_eval_plus_plus.core.data_structures import Sample, ModelOutput
+
+# Initialize evaluator
+evaluator = FLYEvalPlusPlus()
+
+# Create sample and model output
+sample = Sample(
+    sample_id="test_001",
+    task_id="S1",
+    context={"question": "...", "current_state": {...}},
+    gold={"next_second": {...}, "available": True}
+)
+
+model_output = ModelOutput(
+    model_name="test_model",
+    sample_id="test_001",
+    raw_response_text='{"field": "value"}',
+    timestamp="2025-01-29",
+    task_id="S1"
+)
+
+# Evaluate
+record = evaluator.evaluate_sample(sample, model_output)
+scores = record.optional_scores['dimension_scores']
+```
+
 ## Contact
 
-[Your contact information]
+For questions or issues, please open an issue on GitHub.
